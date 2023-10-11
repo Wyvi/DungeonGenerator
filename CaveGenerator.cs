@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace DungeonGenerator
 {
@@ -11,6 +12,8 @@ namespace DungeonGenerator
         private int neigboursToStayFloor = 3;
         private int neigboursToCreateFloor = 5;
         private int levelCellsChecking = 3;
+
+        private double minCaveSizeModifier = 0.75;
 
 
         private Level RandomLevelGenerator(LevelParameters parameters)
@@ -57,15 +60,21 @@ namespace DungeonGenerator
         public Level GenerateLevel(LevelParameters parameters)
         {
             var level = RandomLevelGenerator(parameters);
-            level.WriteToConsole();
 
             for (int i=0; i<levelCellsChecking; i++)
             {
                 level = CellsLifeChecking(level);
-                level.WriteToConsole();
             }
 
-            return level;
+            int minCaveSize = (int)(minCaveSizeModifier * parameters.Width * parameters.Height * parameters.WalkableFloorChance);
+            if (level.OnlyOneConectedArea(minCaveSize))
+            {
+                return level;
+            }
+            else
+            {
+                return GenerateLevel(parameters);
+            }
         }
     }
 }
