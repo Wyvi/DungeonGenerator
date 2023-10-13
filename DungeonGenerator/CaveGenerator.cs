@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Drawing;
 
 namespace DungeonGenerator
 {
@@ -26,7 +25,7 @@ namespace DungeonGenerator
                 {
                     if (random.NextDouble() < parameters.WalkableFloorChance)
                     {
-                        level.SetCellType(x, y, TypeOfTiles.floor);
+                        level.SetCellType(x, y, TileType.floor);
                     }
                 }
             }
@@ -43,11 +42,11 @@ namespace DungeonGenerator
                     
                     if(floorNeighbours < neigboursToStayFloor)
                     {
-                        checkedLevel.SetCellType(x, y, TypeOfTiles.wall);
+                        checkedLevel.SetCellType(x, y, TileType.wall);
                     }
                     else if(floorNeighbours >= neigboursToCreateFloor)
                     {
-                        checkedLevel.SetCellType(x, y, TypeOfTiles.floor);
+                        checkedLevel.SetCellType(x, y, TileType.floor);
                     }
                     else
                     {
@@ -67,8 +66,11 @@ namespace DungeonGenerator
             }
 
             int minCaveSize = (int)(minCaveSizeModifier * parameters.Width * parameters.Height * parameters.WalkableFloorChance);
-            if (level.OnlyOneConectedArea(minCaveSize))
+            var area = level.FindLargestArea();
+            
+            if (area.Count() >= minCaveSize)
             {
+                level.LevelFromArea(area);
                 return level;
             }
             else
