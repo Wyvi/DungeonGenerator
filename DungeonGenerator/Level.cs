@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace DungeonGenerator
 {
-    public class Level 
+    public class Level
     {
         public int Width { get; private set; }
         public int Height { get; private set; }
@@ -15,15 +16,29 @@ namespace DungeonGenerator
 
         public Level(int width, int height)
         {
-            this.Width = width; 
-            this.Height = height;
+            if (width < 1)
+            {
+                throw new ArgumentException("width must be >= 1", nameof(width));
+            }
+            if (height < 1)
+            {
+                throw new ArgumentException("height must be >= 1", nameof(height));
+            }
+
+            Width = width;
+            Height = height;
             level = new TileType[width, height];
         }
 
         public Level(TileType[,] level)
         {
-            this.Width = level.GetLength(0);
-            this.Height = level.GetLength(1);
+            if (level.GetLength(0) < 1 || level.GetLength(1) < 1)
+            {
+                throw new ArgumentException("leve size must be at least [1,1]", nameof(level));
+            }
+
+            Width = level.GetLength(0);
+            Height = level.GetLength(1);
             this.level = level;
         }
 
@@ -32,10 +47,19 @@ namespace DungeonGenerator
             return Array.AsReadOnly(level.Cast<TileType>().ToArray());
         }
 
-        public void LevelFromArea(Area area)
+
+        public static Level CreateLevelFromArea(Area area)
+        {
+            var level = new Level(area.Width, area.Height);
+            level.SetAreaToLevel(area);
+            return level;
+        }
+
+
+        public void SetAreaToLevel(Area area)
         {
             level = new TileType[Width, Height];
-            foreach(var cell in area.GetCells())
+            foreach (Vector2Int cell in area.GetCells())
             {
                 SetCellType(cell.X, cell.Y, TileType.floor);
             }
@@ -75,7 +99,7 @@ namespace DungeonGenerator
 
         public void SetCellType(int x, int y, TileType type)
         {
-            if (IsCellInLevel(x,y))
+            if (IsCellInLevel(x, y))
             {
                 level[x, y] = type;
             }
@@ -94,21 +118,26 @@ namespace DungeonGenerator
         {
             var areas = FindConectedAreas();
             var largestArea = areas.Max();
+            largestArea = (largestArea != null) ? largestArea : Area.Smaller();
             return largestArea;
         }
 
-        
+        public int NumOfConectedAreas()
+        {
+            return FindConectedAreas().Count();
+        }
+
 
         private List<Area> FindConectedAreas()
         {
             var areas = new List<Area>();
-            TileType[,] levelForFill = (TileType[,]) level.Clone();
+            TileType[,] levelForFill = (TileType[,])level.Clone();
             TileType[] flattened = levelForFill.Cast<TileType>().ToArray();
             int floorIndex = Array.IndexOf(flattened, TileType.floor);
             while (floorIndex >= 0)
             {
                 var startingPoint = new Vector2Int(floorIndex / level.GetLength(1), floorIndex % level.GetLength(1));
-                areas.Add(FloodFill(startingPoint,levelForFill));
+                areas.Add(FloodFill(startingPoint, levelForFill));
 
                 flattened = levelForFill.Cast<TileType>().ToArray();
                 floorIndex = Array.IndexOf(flattened, TileType.floor);
@@ -125,14 +154,14 @@ namespace DungeonGenerator
             {
                 var cell = cellsForCheck[0];
                 cellsForCheck.Remove(cell);
-                
+
                 levelForFill[cell.X, cell.Y] = TileType.fill;
                 area.Add(cell);
 
-                Vector2Int[] neighbours = DirectNeighbours(cell);
-                foreach (var point in neighbours)
+                var neighbours = DirectNeighbours(cell);
+                foreach (Vector2Int point in neighbours)
                 {
-                    if(GetCellFromLevel(point.X,point.Y,levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
+                    if (GetCellFromLevel(point.X, point.Y, levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
                     {
                         cellsForCheck.Add(point);
                     }
@@ -163,7 +192,7 @@ namespace DungeonGenerator
             {
                 for (int y = 0; y < level.GetLength(1); y++)
                 {
-                    switch ((TileType)level[x, y])
+                    switch (level[x, y])
                     {
                         case TileType.wall:
                             Console.Write("#");
@@ -178,6 +207,19 @@ namespace DungeonGenerator
                 }
                 Console.Write('\n');
             }
+        }
+
+
+        public override string ToString()
+        {
+            var str = new StringBuilder();
+
+            for (int x = 0; x < level.GetLength(0); x++)
+            {
+                var levelXArray = Enumerable.Range(0, level.GetLength(1)).Select(y => level[x, y].ToString()).ToArray();
+                str.AppendLine(string.Join(" , ", levelXArray));
+            }
+            return str.ToString();
         }
 
     }

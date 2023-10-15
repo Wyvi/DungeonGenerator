@@ -14,6 +14,9 @@ namespace DungeonGenerator
 
         private double minCaveSizeModifier = 0.75;
 
+        private int maxNumOfAttempts = 15;
+        private Area largestAreaInThisSession = Area.Smaller();
+
 
         private Level RandomLevelGenerator(LevelParameters parameters)
         {
@@ -35,16 +38,16 @@ namespace DungeonGenerator
         private Level CellsLifeChecking(Level level)
         {
             var checkedLevel = new Level(level.Width, level.Height);
-            for(int x=0; x<level.Width; x++)
-                for(int y=0; y < level.Height; y++)
+            for (int x = 0; x < level.Width; x++)
+                for (int y = 0; y < level.Height; y++)
                 {
                     var floorNeighbours = level.CountWalkableNeighbours(x, y);
-                    
-                    if(floorNeighbours < neigboursToStayFloor)
+
+                    if (floorNeighbours < neigboursToStayFloor)
                     {
                         checkedLevel.SetCellType(x, y, TileType.wall);
                     }
-                    else if(floorNeighbours >= neigboursToCreateFloor)
+                    else if (floorNeighbours >= neigboursToCreateFloor)
                     {
                         checkedLevel.SetCellType(x, y, TileType.floor);
                     }
@@ -56,27 +59,36 @@ namespace DungeonGenerator
             return checkedLevel;
         }
 
+
         public Level GenerateLevel(LevelParameters parameters)
         {
-            var level = RandomLevelGenerator(parameters);
+            return GenerateCave(parameters, maxNumOfAttempts);
+        }
 
-            for (int i=0; i<levelCellsChecking; i++)
+        private Level GenerateCave(LevelParameters parameters, int numOfAttempt)
+        {
+            var level = RandomLevelGenerator(parameters);
+            for (int i = 0; i < levelCellsChecking; i++)
             {
                 level = CellsLifeChecking(level);
             }
 
             int minCaveSize = (int)(minCaveSizeModifier * parameters.Width * parameters.Height * parameters.WalkableFloorChance);
             var area = level.FindLargestArea();
-            
-            if (area.Count() >= minCaveSize)
+            largestAreaInThisSession = new[] { largestAreaInThisSession, area }.Max();
+
+            if (largestAreaInThisSession.Count() >= minCaveSize || numOfAttempt <= 1)
             {
-                level.LevelFromArea(area);
+                level.SetAreaToLevel(largestAreaInThisSession);
+                largestAreaInThisSession = Area.Smaller();
                 return level;
             }
             else
             {
-                return GenerateLevel(parameters);
+                return GenerateCave(parameters, --numOfAttempt);
             }
         }
+
+
     }
 }
