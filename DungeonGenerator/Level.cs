@@ -179,6 +179,10 @@ namespace DungeonGenerator
             return points;
         }
 
+        /// <summary>
+        /// Level cells are written to the console for illustrative purposes. 
+        /// A positive x-axis pointed to the right and a positive y-axis pointed up.
+        /// </summary>
         public void WriteToConsole()
         {
             WriteToConsole(level);
