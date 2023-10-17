@@ -17,10 +17,22 @@ namespace DungeonGenerator
             this.Y = y;
         }
 
+
+
         public override string ToString()
         {
             return $"({X}, {Y})";
         }
+
+        public static Vector2Int operator +(Vector2Int a, Vector2Int b) => 
+            new Vector2Int(a.X + b.X, a.Y + b.Y);
+        public static Vector2Int operator -(Vector2Int a, Vector2Int b) => 
+            new Vector2Int(a.X - b.X, a.Y - b.Y);
+        public static Vector2Int operator /(Vector2Int a, int b) => 
+            new Vector2Int(a.X/b, a.Y/b);
+        public static Vector2Int operator *(Vector2Int a, int b) => 
+            new Vector2Int(a.X * b, a.Y * b);
+
 
     }
 }

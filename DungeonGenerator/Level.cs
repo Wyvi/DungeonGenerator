@@ -42,6 +42,8 @@ namespace DungeonGenerator
             this.level = level;
         }
 
+        
+
         public ReadOnlyCollection<TileType> LevelData()
         {
             return Array.AsReadOnly(level.Cast<TileType>().ToArray());
@@ -62,6 +64,20 @@ namespace DungeonGenerator
             foreach (Vector2Int cell in area.GetCells())
             {
                 SetCellType(cell.X, cell.Y, TileType.floor);
+            }
+        }
+
+        public void SetRoomsToLevel(List<Room> rooms)
+        {
+            foreach (var room in rooms)
+            {
+                for (int x = room.FirstCorner.X; x <= room.LastCorner.X; x++)
+                {
+                    for (int y = room.FirstCorner.Y; y <= room.LastCorner.Y; y++)
+                    {
+                        SetCellType(x, y, TileType.floor);
+                    }
+                }
             }
         }
 
