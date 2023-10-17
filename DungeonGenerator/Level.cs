@@ -192,20 +192,20 @@ namespace DungeonGenerator
         private void WriteToConsole(TileType[,] level)
         {
             Console.WriteLine();
-            for (int x = 0; x < level.GetLength(0); x++)
+            for (int y = level.GetLength(1)-1; y>=0 ; y--)
             {
-                for (int y = 0; y < level.GetLength(1); y++)
+                for (int x = 0; x < level.GetLength(0); x++)
                 {
                     switch (level[x, y])
                     {
                         case TileType.wall:
-                            Console.Write("#");
+                            Console.Write("##");
                             break;
                         case TileType.floor:
-                            Console.Write(" ");
+                            Console.Write("  ");
                             break;
                         case TileType.fill:
-                            Console.Write("O");
+                            Console.Write("OO");
                             break;
                     }
                 }
