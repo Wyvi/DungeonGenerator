@@ -1,11 +1,12 @@
 ﻿using DungeonGenerator;
+using DungeonGenerator.Cave;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DungeonGeneratorTests
+namespace DungeonGeneratorTests.CaveTests
 {
     [TestClass]
     public class CaveGeneratorTest

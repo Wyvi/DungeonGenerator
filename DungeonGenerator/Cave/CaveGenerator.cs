@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DungeonGenerator
+namespace DungeonGenerator.Cave
 {
     public class CaveGenerator : ILevelGenerator
     {
@@ -28,7 +28,7 @@ namespace DungeonGenerator
                 {
                     if (random.NextDouble() < parameters.WalkableFloorChance)
                     {
-                        level.SetCellType(x, y, TileType.floor);
+                        level.SetCell(x, y, TileType.floor);
                     }
                 }
             }
@@ -45,15 +45,15 @@ namespace DungeonGenerator
 
                     if (floorNeighbours < neigboursToStayFloor)
                     {
-                        checkedLevel.SetCellType(x, y, TileType.wall);
+                        checkedLevel.SetCell(x, y, TileType.wall);
                     }
                     else if (floorNeighbours >= neigboursToCreateFloor)
                     {
-                        checkedLevel.SetCellType(x, y, TileType.floor);
+                        checkedLevel.SetCell(x, y, TileType.floor);
                     }
                     else
                     {
-                        checkedLevel.SetCellType(x, y, level.GetCellFromLevel(x, y));
+                        checkedLevel.SetCell(x, y, level.GetCell(x, y));
                     }
                 }
             return checkedLevel;
@@ -79,7 +79,7 @@ namespace DungeonGenerator
 
             if (largestAreaInThisSession.Count() >= minCaveSize || numOfAttempt <= 1)
             {
-                level.SetAreaToLevel(largestAreaInThisSession);
+                level.SetArea(largestAreaInThisSession);
                 largestAreaInThisSession = Area.Smaller();
                 return level;
             }

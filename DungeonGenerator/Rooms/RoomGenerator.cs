@@ -1,10 +1,11 @@
-﻿using System;
+﻿using DungeonGenerator.Corridor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DungeonGenerator
+namespace DungeonGenerator.Rooms
 {
     internal class RoomGenerator : ILevelGenerator
     {
@@ -17,7 +18,7 @@ namespace DungeonGenerator
             var levelArea = parameters.Width * parameters.Height;
             List<Room> rooms = new List<Room>();
             var generateRoomChance = Math.Pow(parameters.WalkableFloorChance, 2);
-            
+
             for (int i = 0; i < levelArea / 2; i++)
             {
                 if (random.NextDouble() < generateRoomChance)
@@ -36,8 +37,14 @@ namespace DungeonGenerator
                     }
                 }
             }
+            if (rooms.Count == 0)
+            {
+                rooms.Add(new Room(new Vector2Int(0, 0), new Vector2Int(maxRoomSize, maxRoomSize)));
+            }
+            var corridor = new CorridorGenerator(rooms).Generate();
             var level = new Level(parameters.Width, parameters.Height);
-            level.SetRoomsToLevel(rooms);
+            level.SetRooms(rooms);
+            level.AddArea(corridor);
             return level;
         }
     }

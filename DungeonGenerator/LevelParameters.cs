@@ -10,11 +10,11 @@ namespace DungeonGenerator
     {
         public int Width { get; private set; }
         public int Height { get; private set; }
-        public double WalkableFloorChance {  get; private set; }
+        public double WalkableFloorChance { get; private set; }
 
         public LevelParameters(int width, int height, double walkableFloorChance)
         {
-            if (width < 1) 
+            if (width < 1)
             {
                 throw new ArgumentException("width must be >= 1", nameof(width));
             }

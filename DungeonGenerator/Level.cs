@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DungeonGenerator.Rooms;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace DungeonGenerator
             this.level = level;
         }
 
-        
+
 
         public ReadOnlyCollection<TileType> LevelData()
         {
@@ -50,32 +51,43 @@ namespace DungeonGenerator
         }
 
 
-        public static Level CreateLevelFromArea(Area area)
+        public static Level CreateFromArea(Area area)
         {
             var level = new Level(area.Width, area.Height);
-            level.SetAreaToLevel(area);
+            level.SetArea(area);
             return level;
         }
 
 
-        public void SetAreaToLevel(Area area)
+        public void Clear()
         {
             level = new TileType[Width, Height];
+        }
+
+        public void SetArea(Area area)
+        {
+            Clear();
+            AddArea(area);
+        }
+
+        public void AddArea(Area area)
+        {
             foreach (Vector2Int cell in area.GetCells())
             {
-                SetCellType(cell.X, cell.Y, TileType.floor);
+                SetCell(cell.X, cell.Y, TileType.floor);
             }
         }
 
-        public void SetRoomsToLevel(List<Room> rooms)
+        public void SetRooms(List<Room> rooms)
         {
+            Clear();
             foreach (var room in rooms)
             {
                 for (int x = room.FirstCorner.X; x <= room.LastCorner.X; x++)
                 {
                     for (int y = room.FirstCorner.Y; y <= room.LastCorner.Y; y++)
                     {
-                        SetCellType(x, y, TileType.floor);
+                        SetCell(x, y, TileType.floor);
                     }
                 }
             }
@@ -88,7 +100,7 @@ namespace DungeonGenerator
             {
                 for (int y = -1; y <= 1; y++)
                 {
-                    if (!(x == 0 && y == 0) && GetCellFromLevel(cellPosX + x, cellPosY + y) != TileType.wall)
+                    if (!(x == 0 && y == 0) && GetCell(cellPosX + x, cellPosY + y) != TileType.wall)
                     {
                         count++;
                     }
@@ -98,12 +110,12 @@ namespace DungeonGenerator
         }
 
 
-        public TileType GetCellFromLevel(int x, int y)
+        public TileType GetCell(int x, int y)
         {
-            return GetCellFromLevel(x, y, level);
+            return GetCell(x, y, level);
         }
 
-        private TileType GetCellFromLevel(int x, int y, TileType[,] level)
+        private TileType GetCell(int x, int y, TileType[,] level)
         {
             if (IsCellInLevel(x, y))
             {
@@ -113,7 +125,7 @@ namespace DungeonGenerator
         }
 
 
-        public void SetCellType(int x, int y, TileType type)
+        public void SetCell(int x, int y, TileType type)
         {
             if (IsCellInLevel(x, y))
             {
@@ -134,7 +146,7 @@ namespace DungeonGenerator
         {
             var areas = FindConectedAreas();
             var largestArea = areas.Max();
-            largestArea = (largestArea != null) ? largestArea : Area.Smaller();
+            largestArea = largestArea != null ? largestArea : Area.Smaller();
             return largestArea;
         }
 
@@ -177,7 +189,7 @@ namespace DungeonGenerator
                 var neighbours = DirectNeighbours(cell);
                 foreach (Vector2Int point in neighbours)
                 {
-                    if (GetCellFromLevel(point.X, point.Y, levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
+                    if (GetCell(point.X, point.Y, levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
                     {
                         cellsForCheck.Add(point);
                     }
@@ -208,7 +220,7 @@ namespace DungeonGenerator
         private void WriteToConsole(TileType[,] level)
         {
             Console.WriteLine();
-            for (int y = level.GetLength(1)-1; y>=0 ; y--)
+            for (int y = level.GetLength(1) - 1; y >= 0; y--)
             {
                 for (int x = 0; x < level.GetLength(0); x++)
                 {

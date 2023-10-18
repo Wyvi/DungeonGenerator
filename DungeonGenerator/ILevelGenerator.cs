@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DungeonGenerator
 {
-    internal interface ILevelGenerator
+    public interface ILevelGenerator
     {
         Level GenerateLevel(LevelParameters parameters);
     }

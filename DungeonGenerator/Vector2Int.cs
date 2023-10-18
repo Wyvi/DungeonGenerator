@@ -18,19 +18,24 @@ namespace DungeonGenerator
         }
 
 
+        public static float Distance(Vector2Int a, Vector2Int b)
+        {
+            return (float)Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
+        }
+
 
         public override string ToString()
         {
             return $"({X}, {Y})";
         }
 
-        public static Vector2Int operator +(Vector2Int a, Vector2Int b) => 
+        public static Vector2Int operator +(Vector2Int a, Vector2Int b) =>
             new Vector2Int(a.X + b.X, a.Y + b.Y);
-        public static Vector2Int operator -(Vector2Int a, Vector2Int b) => 
+        public static Vector2Int operator -(Vector2Int a, Vector2Int b) =>
             new Vector2Int(a.X - b.X, a.Y - b.Y);
-        public static Vector2Int operator /(Vector2Int a, int b) => 
-            new Vector2Int(a.X/b, a.Y/b);
-        public static Vector2Int operator *(Vector2Int a, int b) => 
+        public static Vector2Int operator /(Vector2Int a, int b) =>
+            new Vector2Int(a.X / b, a.Y / b);
+        public static Vector2Int operator *(Vector2Int a, int b) =>
             new Vector2Int(a.X * b, a.Y * b);
 
 
