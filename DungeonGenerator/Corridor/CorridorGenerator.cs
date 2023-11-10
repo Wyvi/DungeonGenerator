@@ -9,19 +9,22 @@ namespace DungeonGenerator.Corridor
 {
     public class CorridorGenerator
     {
+        private DungeonSettings dungeonSettings;
         private Dictionary<int, Room> rooms = new Dictionary<int, Room>();
         private List<int> remainingRoomIndexes = new List<int>();
         private CellGraph graph = new CellGraph();
 
-        public CorridorGenerator(List<Room> rooms)
+
+        public CorridorGenerator(List<Room> rooms, DungeonSettings dungeonSettings)
         {
             this.rooms = rooms.ToDictionary(i => rooms.IndexOf(i));
             remainingRoomIndexes = this.rooms.Keys.ToList();
+            this.dungeonSettings = dungeonSettings;
         }
 
-        public Area Generate()
+        public List<CorridorPart> Generate()
         {
-            var corridorArea = new Area();
+            var corridors = new List<CorridorPart>();
 
             while (remainingRoomIndexes.Count > 0)
             {
@@ -31,11 +34,31 @@ namespace DungeonGenerator.Corridor
             var path = SpaningTree().Edges();
             foreach (var edge in path)
             {
-                var cell1 = rooms[edge.FirstPointIndex].CenterNearCell;
-                var cell2 = rooms[edge.SecondPointIndex].CenterNearCell;
-                corridorArea.AddCorridor(cell1, cell2);
+                AddCorridor(edge,corridors);
             }
-            return corridorArea;
+            return corridors;
+        }
+
+        private bool AddCorridor(Edge edge, List<CorridorPart> corridors)
+        {
+            var point1 = rooms[edge.FirstPointIndex].CenterNearCell;
+            var point2 = rooms[edge.SecondPointIndex].CenterNearCell;
+
+            var vertical = CorridorPart.CreateCorridor(true, point1, point2.Y - point1.Y,dungeonSettings);
+            var horizontal = CorridorPart.CreateCorridor(false, point2, point1.X - point2.X,dungeonSettings);
+
+            //kontrola kolize s ostatnimi koridory a mistnostmi
+            
+            if(vertical != null)
+            {
+                corridors.Add(vertical);
+            }
+            if (horizontal != null)
+            {
+                corridors.Add(horizontal);
+            }
+
+            return true;
         }
 
         //Kruskal's 
@@ -56,7 +79,7 @@ namespace DungeonGenerator.Corridor
             foreach (var index in remainingRoomIndexes)
             {
                 var point2 = rooms[index].CenterNearCell;
-                var distance = Vector2Int.Distance(point1, point2);
+                var distance = Math.Abs(point1.X - point2.X) + Math.Abs(point1.Y - point2.Y);
                 graph.Add(new Edge(roomIndex, index, distance));
             }
         }
@@ -67,6 +90,8 @@ namespace DungeonGenerator.Corridor
             remainingRoomIndexes.RemoveAt(0);
             return index;
         }
+
+
 
     }
 }

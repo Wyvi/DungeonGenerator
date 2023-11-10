@@ -2,8 +2,8 @@
 using DungeonGenerator.Cave;
 using DungeonGenerator.Rooms;
 
-var ruggedCave = new LevelParameters(30, 30, 0.4);
-var bigCave = new LevelParameters(30, 30, 0.6);
+var ruggedCave = new LevelParameters(30, 30, 0.4, new DungeonSettings());
+var bigCave = new LevelParameters(30, 30, 0.6, new DungeonSettings());
 
 
 var caveGenerator = new CaveGenerator();

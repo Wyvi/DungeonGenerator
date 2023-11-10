@@ -8,11 +8,13 @@ namespace DungeonGenerator
 {
     public class LevelParameters
     {
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public double WalkableFloorChance { get; private set; }
+        public int Width { get; init; }
+        public int Height { get; init; }
+        public double WalkableFloorChance { get; init; }
 
-        public LevelParameters(int width, int height, double walkableFloorChance)
+        public DungeonSettings Settings { get; init; }
+
+        public LevelParameters(int width, int height, double walkableFloorChance, DungeonSettings settings)
         {
             if (width < 1)
             {
@@ -30,6 +32,7 @@ namespace DungeonGenerator
             Width = width;
             Height = height;
             WalkableFloorChance = walkableFloorChance;
+            Settings = settings;
         }
     }
 }

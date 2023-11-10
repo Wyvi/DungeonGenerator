@@ -37,33 +37,6 @@ namespace DungeonGenerator
             }
         }
 
-        public void AddCorridor(Vector2Int cell1, Vector2Int cell2)
-        {
-            int xDist = cell2.X - cell1.X;
-            if (xDist != 0)
-            {
-                int xStep = xDist / Math.Abs(xDist);
-                int x = cell1.X;
-
-                while (x != cell2.X)
-                {
-                    Add(new Vector2Int(x, cell1.Y));
-                    x += xStep;
-                }
-            }
-
-            int yDist = cell2.Y - cell1.Y;
-            if (yDist != 0)
-            {
-                int yStep = yDist / Math.Abs(yDist);
-                int y = cell1.Y;
-                while (y != cell2.Y)
-                {
-                    Add(new Vector2Int(cell2.X, y));
-                    y += yStep;
-                }
-            }
-        }
 
         public ReadOnlyCollection<Vector2Int> GetCells()
         {

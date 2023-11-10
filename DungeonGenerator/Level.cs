@@ -78,14 +78,19 @@ namespace DungeonGenerator
             }
         }
 
-        public void SetRooms(List<Room> rooms)
+        public void SetRectangles(List<Rectangle> rectangles)
         {
             Clear();
-            foreach (var room in rooms)
+            AddRectangles(rectangles);
+        }
+
+        public void AddRectangles(List<Rectangle> rectangles)
+        {
+            foreach (var room in rectangles)
             {
-                for (int x = room.FirstCorner.X; x <= room.LastCorner.X; x++)
+                for (int x = room.BottomLeftCorner.X; x <= room.TopRightCorner.X; x++)
                 {
-                    for (int y = room.FirstCorner.Y; y <= room.LastCorner.Y; y++)
+                    for (int y = room.BottomLeftCorner.Y; y <= room.TopRightCorner.Y; y++)
                     {
                         SetCell(x, y, TileType.floor);
                     }

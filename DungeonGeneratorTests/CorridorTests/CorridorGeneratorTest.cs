@@ -22,9 +22,10 @@ namespace DungeonGeneratorTests.CorridorTests
                 new Vector2Int(2, 1),
             };
 
+            var settings = new DungeonSettings(1, 1);
             var rooms = new List<Room>() {
-                new Room(new Vector2Int(0,0) , new Vector2Int(1,1)),
-                new Room(new Vector2Int(2,2) , new Vector2Int(1,1)),
+                new Room(new Vector2Int(0,0) , new Vector2Int(1,1), settings),
+                new Room(new Vector2Int(2,2) , new Vector2Int(1,1), settings),
             };
             var generator = new CorridorGenerator(rooms);
 
