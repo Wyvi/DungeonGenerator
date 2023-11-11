@@ -1,12 +1,7 @@
 ﻿using DungeonGenerator;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using DungeonGenerator.Structures;
 
-namespace DungeonGeneratorTests
+namespace DungeonGeneratorTests.StructuresTests
 {
     [TestClass]
     public class LevelTest
@@ -100,6 +95,23 @@ namespace DungeonGeneratorTests
         }
 
         [TestMethod]
+        public void AddArea_ReturnsLevelWithAddedArea()
+        {
+            var expected = new TileType[]{
+                TileType.floor, TileType.floor, TileType.floor,
+                TileType.wall, TileType.wall, TileType.floor,
+            };
+
+            var testingLevel = CreateTestingLevel();
+            var area = new Area();
+            area.Add(new Vector2Int(0, 1));
+
+            testingLevel.AddArea(area);
+
+            CollectionAssert.AreEqual(expected, testingLevel.LevelData());
+        }
+
+        [TestMethod]
         public void CreateFromArea_Area_ReturnsCreatingNewLevelContainingArea()
         {
             var expectedLeveData = new[] { TileType.wall, TileType.floor };
@@ -151,6 +163,79 @@ namespace DungeonGeneratorTests
             Assert.AreEqual(expectedCount, neighborFloorCount);
         }
 
+        [TestMethod]
+        public void Clear_ReturnLevelFillOfWalls()
+        {
+            var expected = new[]{
+                TileType.wall, TileType.wall,
+            };
+            var level = new Level(
+                new TileType[,]{
+                { TileType.wall, TileType.floor, },
+                });
+
+            level.Clear();
+
+            CollectionAssert.AreEqual(expected, level.LevelData());
+        }
+
+
+        [TestMethod]
+        public void SetRectangles_SingleRectangle_ReturnsLevelWithSingleRectangle()
+        {
+            var expected = new TileType[]{
+                TileType.wall, TileType.floor, TileType.wall,
+                TileType.wall, TileType.wall, TileType.wall,
+            };
+
+            var testingLevel = CreateTestingLevel();
+            var rectangle = new Room(new Vector2Int(0, 1), new Vector2Int(1, 1), new DungeonSettings()) as Rectangle;
+            List<Rectangle> rectangles = new List<Rectangle>();
+            rectangles.Add(rectangle);
+
+            testingLevel.SetRectangles(rectangles);
+
+            CollectionAssert.AreEqual(expected, testingLevel.LevelData());
+        }
+
+
+        [TestMethod]
+        public void SetRectangles_RectangleOutOfLevelRange_ReturnsLevelWithCroppedRectangle()
+        {
+            var expected = new TileType[]{
+                TileType.wall, TileType.wall, TileType.wall,
+                TileType.wall, TileType.wall, TileType.floor,
+            };
+
+            var testingLevel = CreateTestingLevel();
+            var rectangle = new Room(new Vector2Int(1, 2), new Vector2Int(3, 3), new DungeonSettings()) as Rectangle;
+            List<Rectangle> rectangles = new List<Rectangle>();
+            rectangles.Add(rectangle);
+
+            testingLevel.SetRectangles(rectangles);
+            
+            CollectionAssert.AreEqual(expected, testingLevel.LevelData());
+        }
+
+
+        [TestMethod]
+        public void AddRectangles_AddSingleRectangle_ReturnsLevelWithAddedRectangle()
+        {
+            var expected = new TileType[]{
+                TileType.floor, TileType.floor, TileType.floor,
+                TileType.wall, TileType.wall, TileType.floor,
+            };
+
+            var testingLevel = CreateTestingLevel();
+            var rectangle = new Room(new Vector2Int(0, 1), new Vector2Int(1, 1), new DungeonSettings()) as Rectangle;
+            List<Rectangle> rectangles = new List<Rectangle>();
+            rectangles.Add(rectangle);
+
+            testingLevel.AddRectangles(rectangles);
+
+            CollectionAssert.AreEqual(expected, testingLevel.LevelData());
+        }
+
 
         private Level CreateTestingLevel()
         {
@@ -160,6 +245,7 @@ namespace DungeonGeneratorTests
             };
             return new Level(levelTestData);
         }
+
 
         private Area CreateExpextedLargestAreaFromTestingLevel()
         {

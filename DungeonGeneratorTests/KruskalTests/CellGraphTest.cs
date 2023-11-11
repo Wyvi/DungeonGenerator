@@ -1,11 +1,6 @@
-﻿using DungeonGenerator.Corridor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DungeonGenerator.Kruskal;
 
-namespace DungeonGeneratorTests.CorridorTests
+namespace DungeonGeneratorTests.KruskalTests
 {
     [TestClass]
     public class CellGraphTest

@@ -1,11 +1,7 @@
-﻿using DungeonGenerator.Rooms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DungeonGenerator.Kruskal;
+using DungeonGenerator.Structures;
 
-namespace DungeonGenerator.Corridor
+namespace DungeonGenerator.Generators
 {
     public class CorridorGenerator
     {
@@ -34,7 +30,7 @@ namespace DungeonGenerator.Corridor
             var path = SpaningTree().Edges();
             foreach (var edge in path)
             {
-                AddCorridor(edge,corridors);
+                AddCorridor(edge, corridors);
             }
             return corridors;
         }
@@ -44,12 +40,12 @@ namespace DungeonGenerator.Corridor
             var point1 = rooms[edge.FirstPointIndex].CenterNearCell;
             var point2 = rooms[edge.SecondPointIndex].CenterNearCell;
 
-            var vertical = CorridorPart.CreateCorridor(true, point1, point2.Y - point1.Y,dungeonSettings);
-            var horizontal = CorridorPart.CreateCorridor(false, point2, point1.X - point2.X,dungeonSettings);
+            var vertical = CorridorPart
+                .CreateCorridor(true, point1, point2.Y - point1.Y, dungeonSettings);
+            var horizontal = CorridorPart
+                .CreateCorridor(false, point2, point1.X - point2.X, dungeonSettings);
 
-            //kontrola kolize s ostatnimi koridory a mistnostmi
-            
-            if(vertical != null)
+            if (vertical != null)
             {
                 corridors.Add(vertical);
             }
@@ -61,7 +57,7 @@ namespace DungeonGenerator.Corridor
             return true;
         }
 
-        //Kruskal's 
+
         private CellGraph SpaningTree()
         {
             var tree = new CellGraph();
@@ -90,7 +86,6 @@ namespace DungeonGenerator.Corridor
             remainingRoomIndexes.RemoveAt(0);
             return index;
         }
-
 
 
     }

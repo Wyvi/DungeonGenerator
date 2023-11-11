@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Markup;
+﻿using System.Collections.ObjectModel;
 
-namespace DungeonGenerator.Corridor
+namespace DungeonGenerator.Kruskal
 {
     public class CellGraph
     {
@@ -18,17 +11,19 @@ namespace DungeonGenerator.Corridor
             edges = new List<Edge>();
         }
 
+
         public void Add(int firstPointIndex, int secondPointIndex, float distance)
         {
             Add(new Edge(firstPointIndex, secondPointIndex, distance));
         }
+
 
         public void Add(Edge edge)
         {
             edges.Add(edge);
         }
 
-        //for Kruskal
+
         public Edge PullOutMinimalEdge()
         {
             var minEdge = edges.Min();

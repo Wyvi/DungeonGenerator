@@ -1,20 +1,15 @@
-﻿using DungeonGenerator.Cave;
-using DungeonGenerator;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DungeonGenerator.Generators;
+using DungeonGenerator.Structures;
 
-namespace DungeonGeneratorTests.RoomsTests
+namespace DungeonGeneratorTests.GeneratorsTests
 {
     [TestClass]
-    public class RoomGeneratorTest
+    public class CaveGeneratorTest
     {
         [TestMethod]
-        public void GenerateLevel_CreateRoomsWithCorridors_ReturnSingleWalkableArea()
+        public void GenerateLevel_CreateCave_ReturnSingleWalkableArea()
         {
-            LevelParameters parameters = new LevelParameters(12, 12, 0.6);
+            LevelParameters parameters = new LevelParameters(40, 40, 0.0,new DungeonSettings());
             var caveGenerator = new CaveGenerator();
 
             var level = caveGenerator.GenerateLevel(parameters);
@@ -24,9 +19,9 @@ namespace DungeonGeneratorTests.RoomsTests
         }
 
         [TestMethod]
-        public void GenerateLevel_CreateRoomWithSmallLevel_ReturnSingleWalkableArea()
+        public void GenerateLevel_CreateSmallCave_ReturnSingleWalkableArea()
         {
-            LevelParameters parameters = new LevelParameters(1, 1, 0.6);
+            LevelParameters parameters = new LevelParameters(1, 1, 0.0, new DungeonSettings());
             var caveGenerator = new CaveGenerator();
 
             var level = caveGenerator.GenerateLevel(parameters);
@@ -34,5 +29,6 @@ namespace DungeonGeneratorTests.RoomsTests
             var numOfWalkableAreas = level.NumOfConectedAreas();
             Assert.AreEqual(1, numOfWalkableAreas);
         }
+
     }
 }

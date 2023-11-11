@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DungeonGenerator.Structures;
 
-namespace DungeonGenerator.Cave
+namespace DungeonGenerator.Generators
 {
     public class CaveGenerator : ILevelGenerator
     {
-        private int neigboursToStayFloor = 3;
-        private int neigboursToCreateFloor = 5;
-        private int levelCellsChecking = 3;
+        private const int neigboursToStayFloor = 3;
+        private const int neigboursToCreateFloor = 5;
+        private const int levelCellsChecking = 3;
+        private const int maxNumOfAttempts = 15;
 
-        private double minCaveSizeModifier = 0.75;
-
-        private int maxNumOfAttempts = 15;
         private Area largestAreaInThisSession = Area.Smaller();
+
+
+        public Level GenerateLevel(LevelParameters parameters)
+        {
+            return GenerateCave(parameters, maxNumOfAttempts);
+        }
 
 
         private Level RandomLevelGenerator(LevelParameters parameters)
@@ -34,6 +34,7 @@ namespace DungeonGenerator.Cave
             }
             return level;
         }
+
 
         private Level CellsLifeChecking(Level level)
         {
@@ -60,11 +61,6 @@ namespace DungeonGenerator.Cave
         }
 
 
-        public Level GenerateLevel(LevelParameters parameters)
-        {
-            return GenerateCave(parameters, maxNumOfAttempts);
-        }
-
         private Level GenerateCave(LevelParameters parameters, int numOfAttempt)
         {
             var level = RandomLevelGenerator(parameters);
@@ -72,8 +68,8 @@ namespace DungeonGenerator.Cave
             {
                 level = CellsLifeChecking(level);
             }
-
-            int minCaveSize = (int)(minCaveSizeModifier * parameters.Width * parameters.Height * parameters.WalkableFloorChance);
+            int levelArea = parameters.Width * parameters.Height;
+            int minCaveSize = (int)(levelArea * parameters.WalkableFloorChance);
             var area = level.FindLargestArea();
             largestAreaInThisSession = new[] { largestAreaInThisSession, area }.Max();
 
@@ -88,7 +84,6 @@ namespace DungeonGenerator.Cave
                 return GenerateCave(parameters, --numOfAttempt);
             }
         }
-
 
     }
 }
