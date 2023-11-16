@@ -10,12 +10,11 @@ namespace DungeonGeneratorTests.GeneratorsTests
         [TestMethod]
         public void Generate_TwoRooms_ReturnsTwoCorridorParts()
         {
-            var settings = new DungeonSettings(1, 1);
             var rooms = new List<Room>() {
-                new Room(new Vector2Int(0,0) , new Vector2Int(1,1), settings),
-                new Room(new Vector2Int(2,2) , new Vector2Int(1,1), settings),
+                new Room(new Vector2Int(0,0) , new Vector2Int(1,1)),
+                new Room(new Vector2Int(2,2) , new Vector2Int(1,1)),
             };
-            var corridorParts = new CorridorGenerator(rooms, settings).Generate();
+            var corridorParts = new CorridorGenerator(rooms).Generate();
 
             var result = corridorParts.Count;
 
@@ -32,13 +31,12 @@ namespace DungeonGeneratorTests.GeneratorsTests
                 new Vector2Int(2, 2),
             };
 
-            var settings = new DungeonSettings(1, 1);
             var rooms = new List<Room>() {
-                new Room(new Vector2Int(0,0) , new Vector2Int(1,1), settings),
-                new Room(new Vector2Int(2,2) , new Vector2Int(1,1), settings),
+                new Room(new Vector2Int(0,0) , new Vector2Int(1,1)),
+                new Room(new Vector2Int(2,2) , new Vector2Int(1,1)),
             };
 
-            var corridorParts = new CorridorGenerator(rooms, settings).Generate();
+            var corridorParts = new CorridorGenerator(rooms).Generate();
             var result = new List<Vector2Int>();
             corridorParts.ForEach(part =>
             {

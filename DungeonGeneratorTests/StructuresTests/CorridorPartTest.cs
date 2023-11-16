@@ -17,7 +17,7 @@ namespace DungeonGeneratorTests.StructuresTests
                 new Vector2Int(x,y+length),
             };
 
-            var part = CorridorPart.CreateCorridor(true, new Vector2Int(x, y), length, new DungeonSettings());
+            var part = CorridorPart.CreateCorridor(true, new Vector2Int(x, y), length);
             var result = new[]
             {
                 part.TopRightCorner,
@@ -39,7 +39,7 @@ namespace DungeonGeneratorTests.StructuresTests
                 new Vector2Int(x+length,y),
             };
 
-            var part = CorridorPart.CreateCorridor(false, new Vector2Int(x, y), length, new DungeonSettings());
+            var part = CorridorPart.CreateCorridor(false, new Vector2Int(x, y), length);
             var result = new[]
             {
                 part.TopRightCorner,
@@ -53,7 +53,7 @@ namespace DungeonGeneratorTests.StructuresTests
         [TestMethod]
         public void CreateCorridor_ZeroLenght_ReturnNull()
         {
-            var result = CorridorPart.CreateCorridor(false, new Vector2Int(0, 0), 0, new DungeonSettings());
+            var result = CorridorPart.CreateCorridor(false, new Vector2Int(0, 0), 0);
             
             Assert.IsNull(result);
         }
@@ -62,7 +62,7 @@ namespace DungeonGeneratorTests.StructuresTests
         public void CreateCorridor_CornerCoordinateLesThen0_ThrowArgumentException()
         {
             Assert.ThrowsException<ArgumentException>(() 
-                => CorridorPart.CreateCorridor(false, new Vector2Int(0, 0), -1, new DungeonSettings())
+                => CorridorPart.CreateCorridor(false, new Vector2Int(0, 0), -1)
                 );
         }
 

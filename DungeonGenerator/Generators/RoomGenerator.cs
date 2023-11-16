@@ -12,7 +12,7 @@ namespace DungeonGenerator.Generators
         {
             var rooms = GenerateRooms(parameters);
 
-            IEnumerable<Rectangle> corridors = new CorridorGenerator(rooms, parameters.Settings).Generate();
+            IEnumerable<Rectangle> corridors = new CorridorGenerator(rooms).Generate();
             IEnumerable<Rectangle> rectRooms = rooms;
 
             var level = new Level(parameters.Width, parameters.Height);
@@ -41,8 +41,8 @@ namespace DungeonGenerator.Generators
                     var roomSize = new Vector2Int(
                         minRoomSize + random.Next(maxWidth - minRoomSize),
                         minRoomSize + random.Next(maxHeight - minRoomSize));
-                    var room = new Room(roomCorner, roomSize, parameters.Settings);
-                    var overlap = rooms.FirstOrDefault(a => a.Overlaps(room));
+                    var room = new Room(roomCorner, roomSize);
+                    var overlap = rooms.FirstOrDefault(a => a.OverlapsWall(room));
                     if (overlap == null)
                     {
                         rooms.Add(room);
@@ -53,8 +53,8 @@ namespace DungeonGenerator.Generators
             {
                 rooms.Add(new Room(
                     new Vector2Int(0, 0),
-                    new Vector2Int(maxRoomSize, maxRoomSize),
-                    new DungeonSettings(1, 1)));
+                    new Vector2Int(maxRoomSize, maxRoomSize)
+                    ));
             }
             return rooms;
         }

@@ -9,7 +9,7 @@ namespace DungeonGeneratorTests.GeneratorsTests
         [TestMethod]
         public void GenerateLevel_CreateCave_ReturnSingleWalkableArea()
         {
-            LevelParameters parameters = new LevelParameters(40, 40, 0.0,new DungeonSettings());
+            LevelParameters parameters = new LevelParameters(40, 40, 0.0);
             var caveGenerator = new CaveGenerator();
 
             var level = caveGenerator.GenerateLevel(parameters);
@@ -21,7 +21,7 @@ namespace DungeonGeneratorTests.GeneratorsTests
         [TestMethod]
         public void GenerateLevel_CreateSmallCave_ReturnSingleWalkableArea()
         {
-            LevelParameters parameters = new LevelParameters(1, 1, 0.0, new DungeonSettings());
+            LevelParameters parameters = new LevelParameters(1, 1, 0.0);
             var caveGenerator = new CaveGenerator();
 
             var level = caveGenerator.GenerateLevel(parameters);

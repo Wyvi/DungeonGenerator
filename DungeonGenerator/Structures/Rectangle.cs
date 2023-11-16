@@ -7,9 +7,9 @@
 
         public Vector2Int Size { get; init; }
 
-        protected DungeonSettings settings;
+        protected const int Wall = 1;
 
-        protected Rectangle(Vector2Int bottomLeftcorner, Vector2Int size, DungeonSettings settings)
+        protected Rectangle(Vector2Int bottomLeftcorner, Vector2Int size)
         {
             if (bottomLeftcorner.X < 0 || bottomLeftcorner.Y < 0)
             {
@@ -23,28 +23,40 @@
             Size = size;
             var additionalSize = new Vector2Int(size.X - 1, size.Y - 1);
             TopRightCorner = bottomLeftcorner + additionalSize;
-            this.settings = settings;
         }
 
-        public bool Overlaps(Rectangle rect)
+
+        private bool Overlaps(Vector2Int bottomLeft, Vector2Int topRight)
         {
-            var wallThickness = settings.MinWallThickness;
-            var firstCornerWithWall = new Vector2Int(
-                BottomLeftCorner.X - wallThickness,
-                BottomLeftCorner.Y - wallThickness);
-            var lastCornerWithWall = new Vector2Int(
-                TopRightCorner.X + wallThickness,
-                TopRightCorner.Y + wallThickness);
-            bool xOverlaping = Math.Min(lastCornerWithWall.X, rect.TopRightCorner.X)
-                >= Math.Max(firstCornerWithWall.X, rect.BottomLeftCorner.X);
-            bool yOverlaping = Math.Min(lastCornerWithWall.Y, rect.TopRightCorner.Y)
-                >= Math.Max(firstCornerWithWall.Y, rect.BottomLeftCorner.Y);
+            bool xOverlaping = Math.Min(TopRightCorner.X, topRight.X)
+                >= Math.Max(BottomLeftCorner.X, bottomLeft.X);
+            bool yOverlaping = Math.Min(TopRightCorner.Y, topRight.Y)
+                >= Math.Max(BottomLeftCorner.Y, bottomLeft.Y);
 
             if (xOverlaping && yOverlaping)
             {
                 return true;
             }
             return false;
+        }
+
+
+        public bool Overlaps(Rectangle rect)
+        {
+            return Overlaps(rect.BottomLeftCorner, rect.TopRightCorner);
+        }
+
+
+        public bool OverlapsWall(Rectangle rect)
+        {
+            var bottomLeftWithWall = new Vector2Int(
+                rect.BottomLeftCorner.X - Wall,
+                rect.BottomLeftCorner.Y - Wall);
+            var topRightWithWall = new Vector2Int(
+                rect.TopRightCorner.X + Wall,
+                rect.TopRightCorner.Y + Wall);
+
+            return Overlaps(bottomLeftWithWall, topRightWithWall);
         }
 
 

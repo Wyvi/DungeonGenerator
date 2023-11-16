@@ -189,7 +189,7 @@ namespace DungeonGeneratorTests.StructuresTests
             };
 
             var testingLevel = CreateTestingLevel();
-            var rectangle = new Room(new Vector2Int(0, 1), new Vector2Int(1, 1), new DungeonSettings()) as Rectangle;
+            var rectangle = new Room(new Vector2Int(0, 1), new Vector2Int(1, 1)) as Rectangle;
             List<Rectangle> rectangles = new List<Rectangle>();
             rectangles.Add(rectangle);
 
@@ -208,7 +208,7 @@ namespace DungeonGeneratorTests.StructuresTests
             };
 
             var testingLevel = CreateTestingLevel();
-            var rectangle = new Room(new Vector2Int(1, 2), new Vector2Int(3, 3), new DungeonSettings()) as Rectangle;
+            var rectangle = new Room(new Vector2Int(1, 2), new Vector2Int(3, 3)) as Rectangle;
             List<Rectangle> rectangles = new List<Rectangle>();
             rectangles.Add(rectangle);
 
@@ -227,7 +227,7 @@ namespace DungeonGeneratorTests.StructuresTests
             };
 
             var testingLevel = CreateTestingLevel();
-            var rectangle = new Room(new Vector2Int(0, 1), new Vector2Int(1, 1), new DungeonSettings()) as Rectangle;
+            var rectangle = new Room(new Vector2Int(0, 1), new Vector2Int(1, 1)) as Rectangle;
             List<Rectangle> rectangles = new List<Rectangle>();
             rectangles.Add(rectangle);
 

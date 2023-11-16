@@ -6,9 +6,8 @@
         public int Height { get; init; }
         public double WalkableFloorChance { get; init; }
 
-        public DungeonSettings Settings { get; init; }
 
-        public LevelParameters(int width, int height, double walkableFloorChance, DungeonSettings settings)
+        public LevelParameters(int width, int height, double walkableFloorChance)
         {
             if (width < 1)
             {
@@ -26,7 +25,6 @@
             Width = width;
             Height = height;
             WalkableFloorChance = walkableFloorChance;
-            Settings = settings;
         }
     }
 }

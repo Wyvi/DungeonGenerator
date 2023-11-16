@@ -23,6 +23,11 @@ namespace DungeonGenerator.Kruskal
             edges.Add(edge);
         }
 
+        public void AddRange(IEnumerable<Edge> edges)
+        {
+            this.edges.AddRange(edges);
+        }
+
 
         public Edge PullOutMinimalEdge()
         {
