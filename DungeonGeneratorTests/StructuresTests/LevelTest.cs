@@ -114,11 +114,11 @@ namespace DungeonGeneratorTests.StructuresTests
         [TestMethod]
         public void CreateFromArea_Area_ReturnsCreatingNewLevelContainingArea()
         {
-            var expectedLeveData = new[] { TileType.wall, TileType.floor };
+            var expectedLeveData = new[] { TileType.wall, TileType.floor, TileType.wall };
             var area = new Area();
             area.Add(new Vector2Int(0, 1));
 
-            var level = Level.CreateFromArea(area);
+            var level = Level.CreateFromArea(area, new LevelParameters(1,3,0.5));
 
             CollectionAssert.AreEqual(expectedLeveData, level.LevelData());
         }

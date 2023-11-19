@@ -11,27 +11,27 @@
 
         protected Rectangle(Vector2Int bottomLeftcorner, Vector2Int size)
         {
-            if (bottomLeftcorner.X < 0 || bottomLeftcorner.Y < 0)
+            if (bottomLeftcorner.x < 0 || bottomLeftcorner.y < 0)
             {
                 throw new ArgumentException("Corner coordinates must be < 0", nameof(bottomLeftcorner));
             }
-            if (size.X < 1 || size.Y < 1)
+            if (size.x < 1 || size.y < 1)
             {
                 throw new ArgumentException("Size coordinates must be > 0", nameof(size));
             }
             BottomLeftCorner = bottomLeftcorner;
             Size = size;
-            var additionalSize = new Vector2Int(size.X - 1, size.Y - 1);
+            var additionalSize = new Vector2Int(size.x - 1, size.y - 1);
             TopRightCorner = bottomLeftcorner + additionalSize;
         }
 
 
-        private bool Overlaps(Vector2Int bottomLeft, Vector2Int topRight)
+        private bool IsOverlapping(Vector2Int bottomLeft, Vector2Int topRight)
         {
-            bool xOverlaping = Math.Min(TopRightCorner.X, topRight.X)
-                >= Math.Max(BottomLeftCorner.X, bottomLeft.X);
-            bool yOverlaping = Math.Min(TopRightCorner.Y, topRight.Y)
-                >= Math.Max(BottomLeftCorner.Y, bottomLeft.Y);
+            bool xOverlaping = Math.Min(TopRightCorner.x, topRight.x)
+                >= Math.Max(BottomLeftCorner.x, bottomLeft.x);
+            bool yOverlaping = Math.Min(TopRightCorner.y, topRight.y)
+                >= Math.Max(BottomLeftCorner.y, bottomLeft.y);
 
             if (xOverlaping && yOverlaping)
             {
@@ -41,22 +41,45 @@
         }
 
 
-        public bool Overlaps(Rectangle rect)
+        public bool IsOverlapping(Rectangle rect)
         {
-            return Overlaps(rect.BottomLeftCorner, rect.TopRightCorner);
+            return IsOverlapping(rect.BottomLeftCorner, rect.TopRightCorner);
         }
 
 
-        public bool OverlapsWall(Rectangle rect)
+        public bool IsTouching(Rectangle rect)
+        {
+            return !IsOverlapping(rect) && IsOverlappingWithWall(rect);
+        }
+
+
+        public bool IsTouching(List<Rectangle> rects)
+        {
+            var overlap = rects.FirstOrDefault(r => IsTouching(r));
+            return overlap != null;
+        }
+
+
+        public bool IsOverlappingWithWall(Rectangle rect)
         {
             var bottomLeftWithWall = new Vector2Int(
-                rect.BottomLeftCorner.X - Wall,
-                rect.BottomLeftCorner.Y - Wall);
+                rect.BottomLeftCorner.x - Wall,
+                rect.BottomLeftCorner.y - Wall);
             var topRightWithWall = new Vector2Int(
-                rect.TopRightCorner.X + Wall,
-                rect.TopRightCorner.Y + Wall);
+                rect.TopRightCorner.x + Wall,
+                rect.TopRightCorner.y + Wall);
 
-            return Overlaps(bottomLeftWithWall, topRightWithWall);
+            return IsOverlapping(bottomLeftWithWall, topRightWithWall);
+        }
+
+
+        public bool IsWholeIn(Rectangle rect)
+        {
+            bool bottom = rect.BottomLeftCorner.x <= BottomLeftCorner.x
+                && rect.BottomLeftCorner.y <= BottomLeftCorner.y;
+            bool top = rect.TopRightCorner.x >= TopRightCorner.x
+                && rect.TopRightCorner.y >= TopRightCorner.y;
+            return bottom && top;
         }
 
 

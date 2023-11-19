@@ -4,26 +4,33 @@ namespace DungeonGenerator.Kruskal
 {
     public class CellGraph
     {
-        private List<Edge> edges;
+        protected List<Edge> edges = new List<Edge>();
 
-        public CellGraph()
+
+        public CellGraph() { }
+
+
+        public CellGraph Copy()
         {
-            edges = new List<Edge>();
+            var copy = new CellGraph();
+            copy.AddEdge(edges);
+            return copy;
         }
 
 
-        public void Add(int firstPointIndex, int secondPointIndex, float distance)
+        public virtual void AddEdge(int firstPointIndex, int secondPointIndex, float distance)
         {
-            Add(new Edge(firstPointIndex, secondPointIndex, distance));
+            AddEdge(new Edge(firstPointIndex, secondPointIndex, distance));
         }
 
 
-        public void Add(Edge edge)
+        public virtual void AddEdge(Edge edge)
         {
             edges.Add(edge);
         }
 
-        public void AddRange(IEnumerable<Edge> edges)
+
+        public virtual void AddEdge(IEnumerable<Edge> edges)
         {
             this.edges.AddRange(edges);
         }
@@ -37,15 +44,6 @@ namespace DungeonGenerator.Kruskal
         }
 
 
-        public void AddNotLoopingEdge(Edge edge)
-        {
-            if (!ExistPath(edge.FirstPointIndex, edge.SecondPointIndex))
-            {
-                edges.Add(edge);
-            }
-        }
-
-
         public ReadOnlyCollection<Edge> Edges()
         {
             return edges.AsReadOnly();
@@ -55,45 +53,6 @@ namespace DungeonGenerator.Kruskal
         public bool IsEmpty()
         {
             return edges.Count == 0;
-        }
-
-
-        private bool ExistPath(int start, int end, List<Edge>? usedEdges = null)
-        {
-            if (usedEdges == null)
-            {
-                usedEdges = new List<Edge>();
-            }
-
-            var conectedEdges = UnusedEdges(start, usedEdges);
-            if (conectedEdges.FirstOrDefault(e => e.ContainPoint(end)) != null)
-            {
-                return true;
-            }
-            usedEdges.AddRange(conectedEdges);
-
-            var endPoints = conectedEdges.Select(e => e.AnotherPoint(start)).ToList();
-            foreach (var point in endPoints)
-            {
-                if (ExistPath(point, end, usedEdges))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-        private List<Edge> AllPointEdges(int point)
-        {
-            return edges.Where(e => e.ContainPoint(point)).ToList();
-        }
-
-
-        private List<Edge> UnusedEdges(int point, List<Edge> usedEdges)
-        {
-            var edges = AllPointEdges(point);
-            return edges.Where(e => !usedEdges.Contains(e)).ToList();
         }
 
 

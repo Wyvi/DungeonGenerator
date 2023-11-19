@@ -45,9 +45,9 @@ namespace DungeonGenerator.Structures
         }
 
 
-        public static Level CreateFromArea(Area area)
+        public static Level CreateFromArea(Area area,LevelParameters parameters)
         {
-            var level = new Level(area.Width, area.Height);
+            var level = new Level(parameters.Width, parameters.Height);
             level.SetArea(area);
             return level;
         }
@@ -68,7 +68,7 @@ namespace DungeonGenerator.Structures
         {
             foreach (Vector2Int cell in area.GetCells())
             {
-                SetCell(cell.X, cell.Y, TileType.floor);
+                SetCell(cell.x, cell.y, TileType.floor);
             }
         }
 
@@ -82,9 +82,9 @@ namespace DungeonGenerator.Structures
         {
             foreach (var room in rectangles)
             {
-                for (int x = room.BottomLeftCorner.X; x <= room.TopRightCorner.X; x++)
+                for (int x = room.BottomLeftCorner.x; x <= room.TopRightCorner.x; x++)
                 {
-                    for (int y = room.BottomLeftCorner.Y; y <= room.TopRightCorner.Y; y++)
+                    for (int y = room.BottomLeftCorner.y; y <= room.TopRightCorner.y; y++)
                     {
                         SetCell(x, y, TileType.floor);
                     }
@@ -182,13 +182,13 @@ namespace DungeonGenerator.Structures
                 var cell = cellsForCheck[0];
                 cellsForCheck.Remove(cell);
 
-                levelForFill[cell.X, cell.Y] = TileType.fill;
+                levelForFill[cell.x, cell.y] = TileType.fill;
                 area.Add(cell);
 
                 var neighbours = DirectNeighbours(cell);
                 foreach (Vector2Int point in neighbours)
                 {
-                    if (GetCell(point.X, point.Y, levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
+                    if (GetCell(point.x, point.y, levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
                     {
                         cellsForCheck.Add(point);
                     }
@@ -199,10 +199,10 @@ namespace DungeonGenerator.Structures
 
         private Vector2Int[] DirectNeighbours(Vector2Int position)
         {
-            Vector2Int[] points = {new Vector2Int(position.X, position.Y - 1),
-                    new Vector2Int(position.X, position.Y + 1),
-                    new Vector2Int(position.X - 1, position.Y),
-                    new Vector2Int(position.X + 1, position.Y) };
+            Vector2Int[] points = {new Vector2Int(position.x, position.y - 1),
+                    new Vector2Int(position.x, position.y + 1),
+                    new Vector2Int(position.x - 1, position.y),
+                    new Vector2Int(position.x + 1, position.y) };
             return points;
         }
 

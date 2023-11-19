@@ -12,50 +12,60 @@ namespace DungeonGenerator.Generators
         public CorridorGenerator(List<Room> rooms)
         {
             this.rooms = rooms.ToDictionary(i => rooms.IndexOf(i));
-            SetRoomsWithoutEdges();
+            roomsWithoutEdges = this.rooms.Keys.ToList();
         }
 
 
         public List<CorridorPart> Generate()
         {
-            var corridors = new List<CorridorPart>();
             CellGraph graph = new CellGraph();
 
             while (roomsWithoutEdges.Count > 0)
             {
-                graph.AddRange(CreateEdges(ShiftRoomIndex()));
+                graph.AddEdge(CreateEdges(ShiftRoomIndex()));
             }
-            var path = SpaningTree(graph).Edges();
+            var spantree = SpanningTree.Create(graph);
+            return FindCorridors(spantree);
+        }
+
+
+        private List<CorridorPart> FindCorridors(SpanningTree tree)
+        {
+            var path = tree.Edges();
+            var corridors = new List<CorridorPart>();
+
             foreach (var edge in path)
             {
-                AddCorridor(edge, corridors);
+                var room1 = rooms[edge.FirstPointIndex];
+                var room2 = rooms[edge.SecondPointIndex];
+                if (!AddCorridor(room1, room2, corridors)
+                    && !AddCorridor(room2, room1, corridors))
+                {
+                    tree.RemoveEdge(edge);
+                    return FindCorridors(tree);
+                }
             }
             return corridors;
         }
 
 
-        private void SetRoomsWithoutEdges()
+        private bool AddCorridor(Room room1, Room room2, List<CorridorPart> corridors)
         {
-            roomsWithoutEdges = this.rooms.Keys.ToList();
-            
-        }
+            var vertical = CorridorPart.Create(true, room1, room2);
+            var horizontal = CorridorPart.Create(false, room2, room1);
+            bool vertCollides = CollidesWithExisting(vertical, room1, room2, corridors);
+            bool horColides = CollidesWithExisting(horizontal, room2, room1, corridors);
 
+            if (vertCollides || horColides)
+            {
+                return false;
+            }
 
-        private bool AddCorridor(Edge edge, List<CorridorPart> corridors)
-        {
-            var point1 = rooms[edge.FirstPointIndex].CenterNearCell;
-            var point2 = rooms[edge.SecondPointIndex].CenterNearCell;
-
-            var vertical = CorridorPart
-                .CreateCorridor(true, point1, point2.Y - point1.Y);
-            var horizontal = CorridorPart
-                .CreateCorridor(false, point2, point1.X - point2.X);
-
-            if (vertical != null)
+            if (!vertical.IsWholeIn(room1))
             {
                 corridors.Add(vertical);
             }
-            if (horizontal != null)
+            if (!horizontal.IsWholeIn(room2))
             {
                 corridors.Add(horizontal);
             }
@@ -64,16 +74,30 @@ namespace DungeonGenerator.Generators
         }
 
 
-        private CellGraph SpaningTree(CellGraph graph)
+        private bool CollidesWithExisting(CorridorPart part, Room start, Room end, List<CorridorPart> corridors)
         {
-            var tree = new CellGraph();
-            while (!graph.IsEmpty())
+            if (!part.IsWholeIn(start))
             {
-                var minEdge = graph.PullOutMinimalEdge();
-                tree.AddNotLoopingEdge(minEdge);
+                return part.IsTouching(end)
+                    || OverlapsRooms(part, start, end)
+                    || part.IsTouching(corridors
+                        .Where(c => c.IsVertical == part.IsVertical)
+                        .Select(c => c as Rectangle).ToList());
             }
-            return tree;
+            return false;
         }
+
+
+        private bool OverlapsRooms(CorridorPart part, Room room1, Room room2)
+        {
+            var roomOverlap = rooms.Select(r => r.Value)
+                    .FirstOrDefault(room =>
+                    room != room1 && room != room2
+                    && room.IsOverlappingWithWall(part));
+
+            return roomOverlap != null;
+        }
+
 
         private List<Edge> CreateEdges(int roomIndex)
         {
@@ -82,11 +106,12 @@ namespace DungeonGenerator.Generators
             foreach (var index in roomsWithoutEdges)
             {
                 var point2 = rooms[index].CenterNearCell;
-                var distance = Math.Abs(point1.X - point2.X) + Math.Abs(point1.Y - point2.Y);
+                var distance = Math.Abs(point1.x - point2.x) + Math.Abs(point1.y - point2.y);
                 edges.Add(new Edge(roomIndex, index, distance));
             }
             return edges;
         }
+
 
         private int ShiftRoomIndex()
         {
@@ -94,7 +119,6 @@ namespace DungeonGenerator.Generators
             roomsWithoutEdges.RemoveAt(0);
             return index;
         }
-
 
     }
 }

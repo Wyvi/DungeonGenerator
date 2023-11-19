@@ -18,6 +18,10 @@ namespace DungeonGenerator.Generators
             var level = new Level(parameters.Width, parameters.Height);
             level.SetRectangles(rectRooms.ToList());
             level.AddRectangles(corridors.ToList());
+
+            //in some cases, one of the rooms cannot be connected by a corridor
+            var area = level.FindLargestArea();
+            level.SetArea(area);
             return level;
         }
 
@@ -32,17 +36,8 @@ namespace DungeonGenerator.Generators
             {
                 if (random.NextDouble() < generateRoomChance)
                 {
-                    var randX = random.Next(parameters.Width - minRoomSize);
-                    var randY = random.Next(parameters.Height - minRoomSize);
-                    var roomCorner = new Vector2Int(randX, randY);
-
-                    var maxWidth = Math.Min(maxRoomSize, parameters.Width - randX + 1);
-                    var maxHeight = Math.Min(maxRoomSize, parameters.Height - randY + 1);
-                    var roomSize = new Vector2Int(
-                        minRoomSize + random.Next(maxWidth - minRoomSize),
-                        minRoomSize + random.Next(maxHeight - minRoomSize));
-                    var room = new Room(roomCorner, roomSize);
-                    var overlap = rooms.FirstOrDefault(a => a.OverlapsWall(room));
+                    var room = RandomRoom(parameters);
+                    var overlap = rooms.FirstOrDefault(a => a.IsOverlappingWithWall(room));
                     if (overlap == null)
                     {
                         rooms.Add(room);
@@ -51,13 +46,44 @@ namespace DungeonGenerator.Generators
             }
             if (rooms.Count == 0)
             {
-                rooms.Add(new Room(
-                    new Vector2Int(0, 0),
-                    new Vector2Int(maxRoomSize, maxRoomSize)
-                    ));
+                rooms.Add(OriginRoom(maxRoomSize));
             }
             return rooms;
         }
 
+
+        private Room RandomRoom(LevelParameters parameters)
+        {
+            var corner = RandomCorner(parameters);
+            var size = RandomSize(corner, parameters);
+            return new Room(corner, size);
+        }
+
+
+        private Vector2Int RandomCorner(LevelParameters parameters)
+        {
+            var randX = random.Next(parameters.Width - minRoomSize);
+            var randY = random.Next(parameters.Height - minRoomSize);
+            return new Vector2Int(randX, randY);
+        }
+
+
+        private Vector2Int RandomSize(Vector2Int corner, LevelParameters parameters)
+        {
+            var maxWidth = Math.Min(maxRoomSize, parameters.Width - corner.x + 1);
+            var maxHeight = Math.Min(maxRoomSize, parameters.Height - corner.y + 1);
+            return new Vector2Int(
+                        minRoomSize + random.Next(maxWidth - minRoomSize),
+                        minRoomSize + random.Next(maxHeight - minRoomSize));
+        }
+
+
+        private Room OriginRoom(int size)
+        {
+            return new Room(
+                    new Vector2Int(0, 0),
+                    new Vector2Int(size, size)
+                    );
+        }
     }
 }

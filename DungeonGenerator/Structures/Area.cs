@@ -27,8 +27,8 @@ namespace DungeonGenerator.Structures
             if (!cells.Contains(cell))
             {
                 cells.Add(cell);
-                Width = Math.Max(Width, cell.X + 1);
-                Height = Math.Max(Height, cell.Y + 1);
+                Width = Math.Max(Width, cell.x + 1);
+                Height = Math.Max(Height, cell.y + 1);
             }
         }
 

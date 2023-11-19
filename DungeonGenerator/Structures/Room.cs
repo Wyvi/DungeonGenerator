@@ -6,7 +6,7 @@
 
         public Room(Vector2Int bottomLeftcorner, Vector2Int size): base(bottomLeftcorner, size)
         {
-            var additionalSize = new Vector2Int(size.X - 1, size.Y - 1);
+            var additionalSize = new Vector2Int(size.x - 1, size.y - 1);
             CenterNearCell = bottomLeftcorner + additionalSize / 2;
         }
     }

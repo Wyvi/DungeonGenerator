@@ -19,7 +19,7 @@ namespace DungeonGeneratorTests.GeneratorsTests
         }
 
         [TestMethod]
-        public void GenerateLevel_CreateRoomWithSmallLevel_ReturnSingleWalkableArea()
+        public void GenerateLevel_CreateRoomInSmallLevel_ReturnSingleWalkableArea()
         {
             LevelParameters parameters = new LevelParameters(1, 1, 0.6);
             var caveGenerator = new CaveGenerator();

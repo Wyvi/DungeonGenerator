@@ -5,21 +5,17 @@
         public bool IsVertical { get; init; }
         private const int MinWidth = 1;
 
+
         private CorridorPart(bool isVertical, Vector2Int bottomLeftcorner, Vector2Int size) : base(bottomLeftcorner, size)
         {
             IsVertical = isVertical;
         }
 
-        public static CorridorPart? CreateCorridor(bool isVertical, Vector2Int start, int length)
+
+        public static CorridorPart Create(bool isVertical, Vector2Int start, int length)
         {
-            if (length == 0)
-            {
-                return null;
-            }
-
-            int x = start.X;
-            int y = start.Y;
-
+            int x = start.x;
+            int y = start.y;
             int width = MinWidth;
             int height = MinWidth;
 
@@ -38,5 +34,30 @@
 
             return new CorridorPart(isVertical, bottomLeftCorner, size);
         }
+
+
+        public static CorridorPart Create(bool isVertical, Room start, Room end)
+        {
+            var startX = start.CenterNearCell.x;
+            var startY = start.CenterNearCell.y;
+            var lenght = 0;
+
+            if (isVertical)
+            {
+                startY = (start.CenterNearCell.y < end.CenterNearCell.y)
+                    ? start.TopRightCorner.y : start.BottomLeftCorner.y;
+                lenght = end.CenterNearCell.y - startY;
+            }
+            else
+            {
+                startX = (start.CenterNearCell.x < end.CenterNearCell.x)
+                    ? start.TopRightCorner.x : start.BottomLeftCorner.x;
+                lenght = end.CenterNearCell.x - startX;
+            }
+
+            return Create(isVertical, new Vector2Int(startX, startY), lenght);
+        }
+
+
     }
 }

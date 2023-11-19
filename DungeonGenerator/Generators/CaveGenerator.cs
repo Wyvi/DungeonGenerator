@@ -63,19 +63,15 @@ namespace DungeonGenerator.Generators
 
         private Level GenerateCave(LevelParameters parameters, int numOfAttempt)
         {
-            var level = RandomLevelGenerator(parameters);
-            for (int i = 0; i < levelCellsChecking; i++)
-            {
-                level = CellsLifeChecking(level);
-            }
+            
             int levelArea = parameters.Width * parameters.Height;
             int minCaveSize = (int)(levelArea * parameters.WalkableFloorChance);
-            var area = level.FindLargestArea();
+            var area = RandomCave(parameters);
             largestAreaInThisSession = new[] { largestAreaInThisSession, area }.Max();
 
             if (largestAreaInThisSession.Count() >= minCaveSize || numOfAttempt <= 1)
             {
-                level.SetArea(largestAreaInThisSession);
+                var level = Level.CreateFromArea(largestAreaInThisSession,parameters);
                 largestAreaInThisSession = Area.Smaller();
                 return level;
             }
@@ -85,5 +81,14 @@ namespace DungeonGenerator.Generators
             }
         }
 
+        private Area RandomCave(LevelParameters parameters)
+        {
+            var level = RandomLevelGenerator(parameters);
+            for (int i = 0; i < levelCellsChecking; i++)
+            {
+                level = CellsLifeChecking(level);
+            }
+            return level.FindLargestArea();
+        }
     }
 }
