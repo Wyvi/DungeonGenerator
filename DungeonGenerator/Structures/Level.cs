@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.ObjectModel;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace DungeonGenerator
+namespace DungeonGenerator.Structures
 {
     public class Level
     {
@@ -42,26 +37,58 @@ namespace DungeonGenerator
             this.level = level;
         }
 
+
+
         public ReadOnlyCollection<TileType> LevelData()
         {
             return Array.AsReadOnly(level.Cast<TileType>().ToArray());
         }
 
 
-        public static Level CreateLevelFromArea(Area area)
+        public static Level CreateFromArea(Area area,LevelParameters parameters)
         {
-            var level = new Level(area.Width, area.Height);
-            level.SetAreaToLevel(area);
+            var level = new Level(parameters.Width, parameters.Height);
+            level.SetArea(area);
             return level;
         }
 
 
-        public void SetAreaToLevel(Area area)
+        public void Clear()
         {
             level = new TileType[Width, Height];
+        }
+
+        public void SetArea(Area area)
+        {
+            Clear();
+            AddArea(area);
+        }
+
+        public void AddArea(Area area)
+        {
             foreach (Vector2Int cell in area.GetCells())
             {
-                SetCellType(cell.X, cell.Y, TileType.floor);
+                SetCell(cell.x, cell.y, TileType.floor);
+            }
+        }
+
+        public void SetRectangles(List<Rectangle> rectangles)
+        {
+            Clear();
+            AddRectangles(rectangles);
+        }
+
+        public void AddRectangles(List<Rectangle> rectangles)
+        {
+            foreach (var room in rectangles)
+            {
+                for (int x = room.BottomLeftCorner.x; x <= room.TopRightCorner.x; x++)
+                {
+                    for (int y = room.BottomLeftCorner.y; y <= room.TopRightCorner.y; y++)
+                    {
+                        SetCell(x, y, TileType.floor);
+                    }
+                }
             }
         }
 
@@ -72,7 +99,7 @@ namespace DungeonGenerator
             {
                 for (int y = -1; y <= 1; y++)
                 {
-                    if (!(x == 0 && y == 0) && GetCellFromLevel(cellPosX + x, cellPosY + y) != TileType.wall)
+                    if (!(x == 0 && y == 0) && GetCell(cellPosX + x, cellPosY + y) != TileType.wall)
                     {
                         count++;
                     }
@@ -82,12 +109,12 @@ namespace DungeonGenerator
         }
 
 
-        public TileType GetCellFromLevel(int x, int y)
+        public TileType GetCell(int x, int y)
         {
-            return GetCellFromLevel(x, y, level);
+            return GetCell(x, y, level);
         }
 
-        private TileType GetCellFromLevel(int x, int y, TileType[,] level)
+        private TileType GetCell(int x, int y, TileType[,] level)
         {
             if (IsCellInLevel(x, y))
             {
@@ -97,7 +124,7 @@ namespace DungeonGenerator
         }
 
 
-        public void SetCellType(int x, int y, TileType type)
+        public void SetCell(int x, int y, TileType type)
         {
             if (IsCellInLevel(x, y))
             {
@@ -118,7 +145,7 @@ namespace DungeonGenerator
         {
             var areas = FindConectedAreas();
             var largestArea = areas.Max();
-            largestArea = (largestArea != null) ? largestArea : Area.Smaller();
+            largestArea = largestArea != null ? largestArea : Area.Smaller();
             return largestArea;
         }
 
@@ -155,13 +182,13 @@ namespace DungeonGenerator
                 var cell = cellsForCheck[0];
                 cellsForCheck.Remove(cell);
 
-                levelForFill[cell.X, cell.Y] = TileType.fill;
+                levelForFill[cell.x, cell.y] = TileType.fill;
                 area.Add(cell);
 
                 var neighbours = DirectNeighbours(cell);
                 foreach (Vector2Int point in neighbours)
                 {
-                    if (GetCellFromLevel(point.X, point.Y, levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
+                    if (GetCell(point.x, point.y, levelForFill) == TileType.floor && !cellsForCheck.Contains(point))
                     {
                         cellsForCheck.Add(point);
                     }
@@ -172,10 +199,10 @@ namespace DungeonGenerator
 
         private Vector2Int[] DirectNeighbours(Vector2Int position)
         {
-            Vector2Int[] points = {new Vector2Int(position.X, position.Y - 1),
-                    new Vector2Int(position.X, position.Y + 1),
-                    new Vector2Int(position.X - 1, position.Y),
-                    new Vector2Int(position.X + 1, position.Y) };
+            Vector2Int[] points = {new Vector2Int(position.x, position.y - 1),
+                    new Vector2Int(position.x, position.y + 1),
+                    new Vector2Int(position.x - 1, position.y),
+                    new Vector2Int(position.x + 1, position.y) };
             return points;
         }
 
@@ -192,7 +219,7 @@ namespace DungeonGenerator
         private void WriteToConsole(TileType[,] level)
         {
             Console.WriteLine();
-            for (int y = level.GetLength(1)-1; y>=0 ; y--)
+            for (int y = level.GetLength(1) - 1; y >= 0; y--)
             {
                 for (int x = 0; x < level.GetLength(0); x++)
                 {

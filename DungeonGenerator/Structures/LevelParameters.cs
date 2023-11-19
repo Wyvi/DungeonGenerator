@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DungeonGenerator
+﻿namespace DungeonGenerator.Structures
 {
     public class LevelParameters
     {
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public double WalkableFloorChance {  get; private set; }
+        public int Width { get; init; }
+        public int Height { get; init; }
+        public double WalkableFloorChance { get; init; }
+
 
         public LevelParameters(int width, int height, double walkableFloorChance)
         {
-            if (width < 1) 
+            if (width < 1)
             {
                 throw new ArgumentException("width must be >= 1", nameof(width));
             }

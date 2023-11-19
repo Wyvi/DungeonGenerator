@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using DungeonGenerator.Structures;
 
-namespace DungeonGenerator
+namespace DungeonGenerator.Generators
 {
     public class CaveGenerator : ILevelGenerator
     {
-        private int neigboursToStayFloor = 3;
-        private int neigboursToCreateFloor = 5;
-        private int levelCellsChecking = 3;
+        private const int neigboursToStayFloor = 3;
+        private const int neigboursToCreateFloor = 5;
+        private const int levelCellsChecking = 3;
+        private const int maxNumOfAttempts = 15;
 
-        private double minCaveSizeModifier = 0.75;
-
-        private int maxNumOfAttempts = 15;
         private Area largestAreaInThisSession = Area.Smaller();
+
+
+        public Level GenerateLevel(LevelParameters parameters)
+        {
+            return GenerateCave(parameters, maxNumOfAttempts);
+        }
 
 
         private Level RandomLevelGenerator(LevelParameters parameters)
@@ -28,12 +28,13 @@ namespace DungeonGenerator
                 {
                     if (random.NextDouble() < parameters.WalkableFloorChance)
                     {
-                        level.SetCellType(x, y, TileType.floor);
+                        level.SetCell(x, y, TileType.floor);
                     }
                 }
             }
             return level;
         }
+
 
         private Level CellsLifeChecking(Level level)
         {
@@ -45,41 +46,32 @@ namespace DungeonGenerator
 
                     if (floorNeighbours < neigboursToStayFloor)
                     {
-                        checkedLevel.SetCellType(x, y, TileType.wall);
+                        checkedLevel.SetCell(x, y, TileType.wall);
                     }
                     else if (floorNeighbours >= neigboursToCreateFloor)
                     {
-                        checkedLevel.SetCellType(x, y, TileType.floor);
+                        checkedLevel.SetCell(x, y, TileType.floor);
                     }
                     else
                     {
-                        checkedLevel.SetCellType(x, y, level.GetCellFromLevel(x, y));
+                        checkedLevel.SetCell(x, y, level.GetCell(x, y));
                     }
                 }
             return checkedLevel;
         }
 
 
-        public Level GenerateLevel(LevelParameters parameters)
-        {
-            return GenerateCave(parameters, maxNumOfAttempts);
-        }
-
         private Level GenerateCave(LevelParameters parameters, int numOfAttempt)
         {
-            var level = RandomLevelGenerator(parameters);
-            for (int i = 0; i < levelCellsChecking; i++)
-            {
-                level = CellsLifeChecking(level);
-            }
-
-            int minCaveSize = (int)(minCaveSizeModifier * parameters.Width * parameters.Height * parameters.WalkableFloorChance);
-            var area = level.FindLargestArea();
+            
+            int levelArea = parameters.Width * parameters.Height;
+            int minCaveSize = (int)(levelArea * parameters.WalkableFloorChance);
+            var area = RandomCave(parameters);
             largestAreaInThisSession = new[] { largestAreaInThisSession, area }.Max();
 
             if (largestAreaInThisSession.Count() >= minCaveSize || numOfAttempt <= 1)
             {
-                level.SetAreaToLevel(largestAreaInThisSession);
+                var level = Level.CreateFromArea(largestAreaInThisSession,parameters);
                 largestAreaInThisSession = Area.Smaller();
                 return level;
             }
@@ -89,6 +81,14 @@ namespace DungeonGenerator
             }
         }
 
-
+        private Area RandomCave(LevelParameters parameters)
+        {
+            var level = RandomLevelGenerator(parameters);
+            for (int i = 0; i < levelCellsChecking; i++)
+            {
+                level = CellsLifeChecking(level);
+            }
+            return level.FindLargestArea();
+        }
     }
 }
